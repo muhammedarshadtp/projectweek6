@@ -37,10 +37,14 @@
                     <td><%= users[i].name %></td>
                     <td><%= users[i].email %></td>
                     <td>
-                        <a href="" class="btn btn-primary">Update</a>
+                        <a href="/update?email=<%=users[i].email%>" class="btn btn-primary">Update</a>
                     </td>
                     <td>
-                        <button class="btn btn-danger" type="submit"><a href="/delete?email=<%=users[i].email%>">Delete</a></button>
+                        <form action="">
+                            <button class="btn btn-danger"><a style="text-decoration: none; color:#fff"
+                                    onclick="return confirm('Do you want to delete the user')"
+                                    href="/delete?email=<%=users[i].email%>">Delete</a></button>
+                        </form>  
                     </td>
                 </tr>
           <%  }}  %> 

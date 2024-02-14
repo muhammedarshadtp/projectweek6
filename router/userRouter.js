@@ -1,6 +1,7 @@
 const express = require('express')
 const collection = require('../src/mongodb')
 const bcrypt = require("bcrypt")
+const {isValidEmail, isValidName }= require("../utils/validation")
 
 console.log(collection)
 
@@ -18,7 +19,7 @@ router.get('/signup', (req, res) => {
     if (req.session.user) {
         res.redirect('/login')
     } else {
-        res.render('signup')
+        res.render('signup',{msg:""})
     }
 
 
@@ -28,48 +29,70 @@ router.post('/signup', async (req, res) => {
     console.log(email, password, name)
     console.log(collection)
     try {
+       
+        // Validate name
+        if (!isValidName(name)) {
+
+            return res.render('signup', { msg: "Name is invalid" });
+
+        } if(!isValidEmail(email)) {
+
+            return res.render('signup', { msg: "Invalid email format" });
+        }
+    
+        
         const hashPassword = await bcrypt.hash(req.body.password, 10)
         const password = hashPassword
+         // Check if user already exists with the provided email
+         const existingUser = await collection.findOne({ email });
+         if (existingUser) {
+             // User with the provided email already exists
+              return res.render('signup',{msg:"Email already exists"});
+         }
         // Create a new user
         const collections = new collection({ email, password, name });
         // Save the user to the database
         await collections.save();
         console.log({ name, email, hashPassword });
         console.log(hashPassword)
+         
         res.redirect('/login')
-    } catch (error) {
-
-
-    }
+         
+    } catch (error) {}
 });
 router.get('/login', (req, res) => {
     if (req.session.user) {
         res.redirect('/home')
     } else {
-        res.render('login')
+        res.render('login',{msg:""})
     }
-
 })
-
 router.post('/login', async (req, res) => {
-    const collect = await collection.findOne({ email: req.body.email })
-    const password = await collection.findOne({ password: collect.password })
-    console.log(collect, password)
+    try {
+        const collect = await collection.findOne({ email: req.body.email });
 
-    if (collect.email === req.body.email) {
-        const result = bcrypt.compare(req.body.password, password.password)
-        if (result) {
-            req.session.userName = collect.name
-                req.session.user = true
-            res.redirect('/home')
+        if (!collect) {
+            // If no user found with the provided email
+             res.render('login', {msg: "Incorrect email " });
         }
-        else {
-            res.redirect('/login')
+
+        const passwordMatch = await bcrypt.compare(req.body.password, collect.password);
+
+        if (!passwordMatch) {
+            // If password does not match
+             res.render('login', {msg:"Incorrect  password" });
         }
-    } else {
-        res.redirect('/login')
+
+        // Successful login
+        req.session.userName = collect.name;
+        req.session.user = true;
+        res.redirect('/home');
+    } catch (error) {
+        console.error('Error during login:', error);
+        
     }
 })
+
 router.get('/home', (req, res) => {
     if (req.session.user) {
         const userName = req.session.userName

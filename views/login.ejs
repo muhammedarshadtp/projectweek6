@@ -38,13 +38,26 @@
 	           
 	            </div>
 	          </form>
-	          <p class="w-100 text-center mb-6 text-white"> You Have an account?<a href="/signup">Sign Up </a></p>	   
+	          <p class="w-100 text-center mb-6 text-white"> You Have an account?<a href="/signup">Sign Up </a></p>
+			  <div class="d-flex justify-content-center">
+			  <% if(msg){ %>
+				<p id="errorMessage" style="color: red;"> <%= msg %> </p>
+			<% } %>
+		</div>
 	          </div>
 		      </div>
 				</div>
 			</div>
 		</div>
 	</section>
+	<script>
+	setTimeout(function(){
+		var errorMessage=document.getElementById("errorMessage")
+		if(errorMessage){
+			errorMessage.style.display = 'none'
+		}
+	},2000)
+</script>
 
 	<script src="js/jquery.min.js"></script>
   <script src="js/popper.js"></script>

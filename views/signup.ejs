@@ -39,15 +39,29 @@
 	            	<button type="submit" class="form-control btn btn-primary submit px-3">Sign In</button>
 	            </div>
 	           
-	            </div>
+	            </div>   
 	          </form>
-	          <p class="w-100 text-center">&mdash; Already you have an account? <a href="/login">login Page </a>  &mdash;</p>	   
-	          </div>
+	          <p class="w-100 text-center">&mdash; Already you have an account? <a href="/login">login Page </a>  &mdash;</p>
+			 <div class="d-flex justify-content-center">
+			  <% if(msg){ %>
+				<p  id="errorMessage" style="color: red;" > <%= msg %> </p>
+			<% } %>
+		</div> 
+				</div>
 		      </div>
 				</div>
 			</div>
 		</div>
 	</section>
+	<script>
+		setTimeout(function(){
+			var errorMessage=document.getElementById("errorMessage");
+			if(errorMessage){
+				errorMessage.style.display ='none'
+			}
+		},2000)
+	</script>
+
 
 	<script src="js/jquery.min.js"></script>
   <script src="js/popper.js"></script>
